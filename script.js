@@ -31,7 +31,8 @@ Aggiungere una `select` accanto al bottone di generazione, che fornisca una scel
 
 */
 
-// const arrayBoxes = [];
+const arrayBoxes = [];
+const arrayBombs = [];
 
 const buttonEasy = document.querySelector('#easy-btn');
 const buttonNormal = document.querySelector('#normal-btn');
@@ -43,45 +44,91 @@ const mainWrapper = document.querySelector('.main-wrapper');
 
 
 
-  // //per la generazione del container 
-  // const generateContainer = document.createElement('div');
-  // //generazione del container
-  // generateContainer.classList.add('container');
-  // mainWrapper.append(generateContainer);
+  //per la generazione del container 
+  const generateContainer = document.createElement('div');
+  //generazione del container
+  generateContainer.classList.add('container');
+  mainWrapper.append(generateContainer);
   
-  // for (let i = 0; i < 100; i++){
-  //   //per la generazione di delle box
-  //   const generateBoxes = document.createElement('div');
-  //   //generazione di una box
-  //   generateBoxes.classList.add('square');
-  //   // document.querySelector('.container').append(generateBoxes);
-  //   document.querySelector('.container').append(generateBoxes);
+  for (let i = 0; i < 49; i++){
+    //per la generazione di delle box
+    const generateBoxes = document.createElement('div');
+    //generazione di una box
+    generateBoxes.classList.add('square-bigger');
+    document.querySelector('.container').append(generateBoxes);
+
     
-  //   // const boxes = document.querySelector('.square');
-  //   // // console.log(boxes, i);    
+    //push di tutti i numeri in una stringa
+    // arrayBoxes.push(i);
+    // console.log(arrayBoxes[i]);
+    // console.log(arrayBoxes);
+    // console.log(arrayBoxes.length);
+    //* tag custom
+    generateBoxes.boxid = i;
+    arrayBoxes.push(i);
+    // arrayBoxes.push(generateBoxes);
+    // arrayBoxes.push(generateBoxes[i]);
+    // console.log('arrayBoxes.length', arrayBoxes.length);
+    // console.log('arrayBoxes', arrayBoxes);
+    // console.log('arrayBoxes[i]', arrayBoxes[i]);
+    // console.log('arrayBombs.length', arrayBombs.length);
     
-  //   // arrayBoxes.push(boxes);
-  //   // // console.log(arrayBoxes[i], [i]);    
-  //   // const singleBox = arrayBoxes[i];
-  //   // console.log(singleBox);    
+    
+    generateBoxes.addEventListener('click', function(){
+      //* cliccando la prima cambia colore e la seconda ritorna come prima
+      generateBoxes.classList.toggle('clicked');
+      //OPPURE (NON LA MIGLIORE PERCHè NON è POSSIBILE LEGGERE LE PROPRIETà NEL CONSOLE.LOG)
+      // this.classList.toggle('clicked');
+      //* cliccando cambia colore per sempre
+      // generateBoxes.classList.add('clicked');
+      //OPPURE
+      // generateBoxes.style.backgroundColor = '#355289';
+      // console.log(generateBoxes);
 
-  //     generateBoxes.addEventListener('click', function(){
-  //       //* cliccando la prima cambia colore e la seconda ritorna come prima
-  //       generateBoxes.classList.toggle('clicked');
-  //       //OPPURE (NON LA MIGLIORE PERCHè NON è POSSIBILE LEGGERE LE PROPRIETà NEL CONSOLE.LOG)
-  //       // this.classList.toggle('clicked');
-  //       //* cliccando cambia colore per sempre
-  //       // generateBoxes.classList.add('clicked');
-  //       //OPPURE
-  //       // generateBoxes.style.backgroundColor = '#355289';
-  //       console.log(generateBoxes);
-  //   });
+      // generateBoxes.boxid = i;
+      // arrayBoxes.push(i);
+      // console.log(arrayBoxes.length);
+    });
+  }
 
-  // }
+  console.log('arrayBoxes.length2', arrayBoxes.length);
+  console.log(arrayBoxes);
 
+  while (arrayBombs.length < 16) {
+
+    const bombNumber = getRandomNumber(1, arrayBoxes.length);
+
+    if(!(arrayBombs.includes(bombNumber))){
+      arrayBombs.push(bombNumber);
+      console.log('numero inserito')
+    }else if(arrayBombs.includes(bombNumber)){
+      console.log('numero non inserito')
+    }
+  }
+
+function getRandomNumber(min, max){
+  return Math.floor(Math.random() * (max - min + 1) + min);
+}
+
+    // for (let j = 0; j < 16; j++) {
+      //OPPURE
+      // Math.floor(Math.random() * (arrayBoxes.length - 1 + 1) + 1)
+      // const bombs = j;
+      // console.log(bombNumber);
+      
+      // if(!(arrayBombs.includes(bombNumber))){
+        //   arrayBoxes.push(bombNumber);
+      //   console.log('numero inserito')
+      // }else if(arrayBombs.includes(bombNumber)){
+        //   console.log('numero non inserito')
+        // }
+        // }
+        
+  console.log(arrayBombs);
+  console.log(arrayBombs.length);
   
 
-
+//* BUTTONS CON DIFFICOLTà ------------------------------------------------------------------------------------------
   
   
 //* button MODALITà FACILE che genera container e box-----------------------------------------------------------------------------------------------------------------------------
