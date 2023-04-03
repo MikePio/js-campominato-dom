@@ -31,235 +31,100 @@ Aggiungere una `select` accanto al bottone di generazione, che fornisca una scel
 
 */
 
-const arrayBoxes = [];
-const arrayBombs = [];
+const btnStart = document.getElementById('btn-start');
 
-const buttonEasy = document.querySelector('#easy-btn');
-const buttonNormal = document.querySelector('#normal-btn');
-const buttonHard = document.querySelector('#hard-btn');
-const mainWrapper = document.querySelector('.main-wrapper');
+btnStart.addEventListener('click', function() {
+  startGame()
+});
 
+function startGame(){
 
+  const levels = parseInt(document.getElementById('select').value);
+  const gridLevels = [100, 81, 49];
+  const squareNumbers = gridLevels[levels - 1];
+  // 'facile' rappresenta 100, 'difficile' rappresenta 81, 'crazy' rappresenta 49
+  const difficulty = ['facile', 'difficile', 'crazy'];
+  const squareClass = difficulty[levels - 1];
+  // .sqrt = radice quadrata dei numeri 100, 81, 49
+  const squareForRow = Math.sqrt(squareNumbers);
+  const bombsNumber = 16;
+  const bombs = generateBombs();
 
+  console.log('squareForRow', squareForRow);
+  console.log('bombs', bombs);
+  console.log('squareNumbers', squareNumbers);
+  console.log('squareClass', squareClass);
+  console.log('squareForRow', squareForRow);
+  document.querySelector('main').innerHTML = '';
 
-
-
-  //per la generazione del container 
-  const generateContainer = document.createElement('div');
-  //generazione del container
-  generateContainer.classList.add('container');
-  mainWrapper.append(generateContainer);
+  generateMainContainer();
   
-  for (let i = 0; i < 49; i++){
-    //per la generazione di delle box
-    const generateBoxes = document.createElement('div');
-    //generazione di una box
-    generateBoxes.classList.add('square-bigger');
-    document.querySelector('.container').append(generateBoxes);
-
+  // funzione genera griglia
+  function generateMainContainer(){
     
-    //push di tutti i numeri in una stringa
-    // arrayBoxes.push(i);
-    // console.log(arrayBoxes[i]);
-    // console.log(arrayBoxes);
-    // console.log(arrayBoxes.length);
-    //* tag custom
-    generateBoxes.boxid = i;
-    arrayBoxes.push(i);
-    // arrayBoxes.push(generateBoxes);
-    // arrayBoxes.push(generateBoxes[i]);
-    // console.log('arrayBoxes.length', arrayBoxes.length);
-    // console.log('arrayBoxes', arrayBoxes);
-    // console.log('arrayBoxes[i]', arrayBoxes[i]);
-    // console.log('arrayBombs.length', arrayBombs.length);
+    const containerGriglia = document.createElement('div');
+    containerGriglia.className = 'container';
+    //OPPURE
+    // containerGriglia.classList.add('container');
     
-    
-    generateBoxes.addEventListener('click', function(){
-      //* cliccando la prima cambia colore e la seconda ritorna come prima
-      generateBoxes.classList.toggle('clicked');
-      //OPPURE (NON LA MIGLIORE PERCHè NON è POSSIBILE LEGGERE LE PROPRIETà NEL CONSOLE.LOG)
-      // this.classList.toggle('clicked');
-      //* cliccando cambia colore per sempre
-      // generateBoxes.classList.add('clicked');
-      //OPPURE
-      // generateBoxes.style.backgroundColor = '#355289';
-      // console.log(generateBoxes);
+    for (let i = 1; i < squareNumbers + 1; i++) {
+      // genera box
+      const box = document.createElement('div');
+      // box.className = 'square';        
+      box.classList.add('square');        
+      //* METODO 1 (MIGLIORE) CON tag custom i numeri NON devono essere mostrati sempre quindi prima del click non vengono mostrati ma solo in console
+      //* .boxid viene dichiarato solo qui in basso e non compare nel resto del codice
+      box.boxid = i;                
+      //! METODO 2 ( con event.target.innerText i numeri devono essere mostrati sempre anche prima del click) mostra il numero di ogni casella 
+      // box.innerHTML = `<span>${i}</span>`;                
+      const squareSize = `calc(100% / ${squareForRow})`; //(100% / 10) oppure (100% / 9) oppure (100% / 7)
+      box.style.width = squareSize; //width = (100% / 10)=10%; oppure width = (100% / 9)=9%; oppure width = (100% / 7)=7%;
+      box.style.height = squareSize; //height = (100% / 10)=10%; oppure height = (100% / 9)=9%; oppure height = (100% / 7)=7%;
+      //! METODO 2 aggiungere event alla funzione ( con event.target.innerText i numeri devono essere mostrati sempre anche prima del click)
+      box.addEventListener('click',function(event){
+        
+        //memorizza il valore dentro la casella
+        //utilizza il valore trovato per fare confrontarli
+        //* METODO 1 (MIGLIORE) CON tag custom
+        if (bombs.includes(parseInt(i))) {
+        //! METODO 2 ( con event.target.innerText i numeri devono essere mostrati sempre anche prima del click) 
+        //bombs.includes(event.target.innerText)
+        // if (bombs.includes(parseInt(event.target.innerText))) {
+          lost = true;
+          console.log('bomba', event.target.innerText);
+          // mostra il numero di ogni casella al click
+          box.innerHTML = `<span>${i}</span>`;                
+          return this.classList.add('bomb', 'clicked');
+        }else {
+          // mostra il numero di ogni casella al click
+          box.innerHTML = `<span>${i}</span>`;                
+          console.log('+ 1 punto = casella', event.target.innerText);
+        return this.classList.add('clicked');
+        }       
 
-      // generateBoxes.boxid = i;
-      // arrayBoxes.push(i);
-      // console.log(arrayBoxes.length);
-    });
-  }
-
-  console.log('arrayBoxes.length2', arrayBoxes.length);
-  console.log(arrayBoxes);
-
-  while (arrayBombs.length < 16) {
-
-    const bombNumber = getRandomNumber(1, arrayBoxes.length);
-
-    if(!(arrayBombs.includes(bombNumber))){
-      arrayBombs.push(bombNumber);
-      console.log('numero inserito')
-    }else if(arrayBombs.includes(bombNumber)){
-      console.log('numero non inserito')
+      })
+      containerGriglia.append(box);
     }
+
+    document.querySelector('main').append(containerGriglia);
   }
+
+  // funzione genera bombe
+  function generateBombs(){
+    const bombsArray = [];
+    console.log('bombsNumber', bombsNumber);
+    while(bombsArray.length < bombsNumber){
+      const bomb = getRandomNumber(1, squareNumbers);
+      if(!bombsArray.includes(bomb)) 
+      bombsArray.push(bomb);
+    }
+    return bombsArray;
+  }
+  
+};
 
 function getRandomNumber(min, max){
   return Math.floor(Math.random() * (max - min + 1) + min);
-}
-
-    // for (let j = 0; j < 16; j++) {
-      //OPPURE
-      // Math.floor(Math.random() * (arrayBoxes.length - 1 + 1) + 1)
-      // const bombs = j;
-      // console.log(bombNumber);
-      
-      // if(!(arrayBombs.includes(bombNumber))){
-        //   arrayBoxes.push(bombNumber);
-      //   console.log('numero inserito')
-      // }else if(arrayBombs.includes(bombNumber)){
-        //   console.log('numero non inserito')
-        // }
-        // }
-        
-  console.log(arrayBombs);
-  console.log(arrayBombs.length);
-  
-
-//* BUTTONS CON DIFFICOLTà ------------------------------------------------------------------------------------------
-  
-  
-//* button MODALITà FACILE che genera container e box-----------------------------------------------------------------------------------------------------------------------------
-buttonEasy.addEventListener('click', function(){
-  // disabilito i buttons
-  buttonHard.disabled = true;
-  buttonEasy.disabled = true;
-  buttonNormal.disabled = true;
-
-  generaContainer();
-  
-  for (let i = 0; i < 100; i++){
-    
-    //per la generazione di delle box
-    const generateBoxes = document.createElement('div');
-    // //generazione di una box
-    // generateBoxes.classList.add('square');
-    // document.querySelector('.container').append(generateBoxes);
-    //*OPPURE
-    const squareType = generateBoxes.classList.add('square-smaller');
-    generaBox(generateBoxes, squareType);
-
-    generateBoxes.addEventListener('click', function(){
-      //* cliccando la prima cambia colore e la seconda ritorna come prima
-      generateBoxes.classList.toggle('clicked');
-      //OPPURE (NON LA MIGLIORE PERCHè NON è POSSIBILE LEGGERE LE PROPRIETà NEL CONSOLE.LOG)
-      // this.classList.toggle('clicked');
-      //* cliccando cambia colore per sempre
-      // generateBoxes.classList.add('clicked');
-      //OPPURE
-      // generateBoxes.style.backgroundColor = '#355289';
-      // console.log(generateBoxes);
-      //* CREO UNA PROPRIETà 
-      generateBoxes.boxid = i;
-      console.log(generateBoxes);
-    });
-    
-  }
-  
-});
-
-console.log(buttonEasy);
-
-//* button DIFFICOLTà NORMALE che genera container e box---------------------------------------------------------------------------------------------------------------------------
-buttonNormal.addEventListener('click', function(){
-  // disabilito i buttons
-  buttonHard.disabled = true;
-  buttonEasy.disabled = true;
-  buttonNormal.disabled = true;
-
-  generaContainer();
-  
-  for (let i = 0; i < 81; i++){
-    
-    //per la generazione delle box
-    const generateBoxes = document.createElement('div');
-    const squareType = generateBoxes.classList.add('square-normal');
-    generaBox(generateBoxes, squareType);
-    
-    generateBoxes.addEventListener('click', function(){
-      //* cliccando la prima cambia colore e la seconda ritorna come prima
-      generateBoxes.classList.toggle('clicked');
-      //OPPURE (NON LA MIGLIORE PERCHè NON è POSSIBILE LEGGERE LE PROPRIETà NEL CONSOLE.LOG)
-      // this.classList.toggle('clicked');
-      //* cliccando cambia colore per sempre
-      // generateBoxes.classList.add('clicked');
-      //OPPURE
-      // generateBoxes.style.backgroundColor = '#355289';
-      // console.log(generateBoxes);
-      //* CREO UNA PROPRIETà 
-      generateBoxes.boxid = i;
-      console.log(generateBoxes);
-    });
-    
-  }
-  
-});
-
-console.log(buttonNormal);
-
-//* button DIFFICOLTà DIFFICILE che genera container e box---------------------------------------------------------------------------------------------------------------------------
-buttonHard.addEventListener('click', function(){
-  // disabilito i buttons
-  buttonHard.disabled = true;
-  buttonEasy.disabled = true;
-  buttonNormal.disabled = true;
-
-  generaContainer();
-  
-  for (let i = 0; i < 49; i++){
-    
-    //per la generazione delle box
-    const generateBoxes = document.createElement('div');
-    const squareType = generateBoxes.classList.add('square-bigger');
-    generaBox(generateBoxes, squareType);
-    
-    generateBoxes.addEventListener('click', function(){
-      //* cliccando la prima cambia colore e la seconda ritorna come prima
-      generateBoxes.classList.toggle('clicked');
-      //OPPURE (NON LA MIGLIORE PERCHè NON è POSSIBILE LEGGERE LE PROPRIETà NEL CONSOLE.LOG)
-      // this.classList.toggle('clicked');
-      //* cliccando cambia colore per sempre
-      // generateBoxes.classList.add('clicked');
-      //OPPURE
-      // generateBoxes.style.backgroundColor = '#355289';
-      // console.log(generateBoxes);
-      //* CREO UNA PROPRIETà 
-      generateBoxes.boxid = i;
-      console.log(generateBoxes);
-    });
-    
-  }
-  
-});
-
-console.log(buttonHard);
-
-
-// * --------------------------- FUNZIONI ---------------------------------- /
-function generaContainer(){
-  //per la generazione del container 
-  const generateContainer = document.createElement('div');
-  //generazione del container
-  generateContainer.classList.add('container');
-  mainWrapper.append(generateContainer);
-}
-
-function generaBox(newBoxes, addClassBoxes){
-  //generazione di una box
-  addClassBoxes;
-  document.querySelector('.container').append(newBoxes);
 }
 
 
